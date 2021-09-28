@@ -1,27 +1,31 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './App.scss';
-
-interface Props {
-  onClick: () => void;
-}
-
-export const Provider: React.FC<Props> = React.memo(
-  ({ onClick, children }) => (
-    <button
-      type="button"
-      onClick={onClick}
-    >
-      {children}
-    </button>
-  ),
-);
+import { RateList } from './components/RateList';
+import data from './api/data.json';
 
 export const App: React.FC = () => {
+  const [rates, setRates] = useState<Rate | []>([]);
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = () => {
+    setLoading(true);
+
+    return new Promise(() => {
+      setTimeout(() => {
+        setRates(data.rates);
+        setLoading(false);
+      }, 2000);
+    });
+  };
+
   return (
-    <div className="starter">
-      <Provider onClick={() => ({})}>
-        <TodoList />
-      </Provider>
+    <div className="m-5">
+      {loading ? (
+        <div className="spinner-border"></div>
+      ) : (
+        <button type="button" onClick={handleChange} className="btn btn-primary">Get rates</button>
+      )}
+      <RateList rates={rates} />
     </div>
   );
 };
